@@ -1,4 +1,4 @@
-FROM node:18.x
+FROM node:18
 WORKDIR /app
 COPY . /app
 RUN npm install
