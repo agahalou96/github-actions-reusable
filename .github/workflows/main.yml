@@ -1,7 +1,17 @@
 name: CI/CD
 
 on:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      login-server:
+        required: true
+        type: string
+    secrets:
+      registry_username:
+        required: true
+      registry_password:
+        required: true
+      
 
 jobs:
   build:
@@ -12,9 +22,10 @@ jobs:
         working-directory: .
     steps:
     -  uses: actions/checkout@v4
-    -  uses: azure/docker-login@v1
+    -  name: Login to registry
+       uses: azure/docker-login@v1
        with:
-         login-server: githubactionsreusableregistry.azurecr.io
+         login-server: ${{ inputs.login-server }}
          username: ${{ secrets.REGISTRY_USERNAME }}
          password: ${{ secrets.REGISTRY_PASSWORD }}
     -  run: |
