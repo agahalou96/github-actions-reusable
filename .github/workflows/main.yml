@@ -6,11 +6,6 @@ on:
       login-server:
         required: true
         type: string
-    secrets:
-      registry_username:
-        required: true
-      registry_password:
-        required: true
       
 
 jobs:
@@ -26,8 +21,8 @@ jobs:
        uses: azure/docker-login@v1
        with:
          login-server: ${{ inputs.login-server }}
-         username: ${{ secrets.REGISTRY_USERNAME }}
-         password: ${{ secrets.REGISTRY_PASSWORD }}
+         username: ${{ env.REGISTRY_USERNAME }}
+         password: ${{ env.REGISTRY_PASSWORD }}
     -  run: |
-         docker build -t githubactionsreusableregistry.azurecr.io/myapp:${{ github.sha }} .
-         docker push githubactionsreusableregistry.azurecr.io/myapp:${{ github.sha }}
+         docker build -t ${{ inputs.login-server }}/myapp:${{ github.sha }} .
+         docker push ${{ inputs.login-server }}/myapp:${{ github.sha }}
