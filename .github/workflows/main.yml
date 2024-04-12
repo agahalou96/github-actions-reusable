@@ -1,25 +1,22 @@
 name: CI/CD
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: src
     steps:
-      -  name: Checkout source
-         uses: actions/checkout@v4
-      -  name: Setup Node.js
-         uses: actions/setup-node@v4
-         with:
-           node-version: '18.x'
-      -  name: Install dependencies
-         run: npm install
-      -  name: Deploy to Azure Web App
-         uses: azure/webapps-deploy@v2
-         with:
-           app-name: githubActionsDemoWebApp
-           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-           package: .
+    -  uses: actions/checkout@v4
+    -  uses: azure/docker-login@v1
+       with:
+         login-server: githubactionsreusableregistry.azurecr.io
+         username: ${{ secrets.REGISTRY_USERNAME }}
+         password: ${{ secrets.REGISTRY_PASSWORD }}
+    -  run:
+         docker build . -t githubactionsreusableregistry.azurecr.io/myapp:${{ github.sha }}
+         docker push githubactionsreusableregistry.azurecr.io/myapp:${{ github.sha }}
